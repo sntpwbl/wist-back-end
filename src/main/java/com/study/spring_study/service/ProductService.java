@@ -30,7 +30,7 @@ public class ProductService {
         Product entity = repository.findById(id).orElseThrow(() -> new NotFoundException("No product found for this ID."));
         
         entity.setName(product.getName());
-        product.setDescription(product.getDescription());
+        entity.setDescription(product.getDescription());
         entity.setPicture(product.getPicture());
         entity.setFirstStore(product.getFirstStore());
         entity.setFirstLink(product.getFirstLink());
@@ -39,11 +39,17 @@ public class ProductService {
         entity.setThirdStore(product.getThirdStore());
         entity.setThirdLink(product.getThirdLink());
 
-
         return repository.save(entity);
     }
     
     public void deleteProduct(Long id){
         repository.deleteById(id);
+    }
+
+    public Product changeBoughtStatus(Long id, boolean isProductBought){
+        Product entity = repository.findById(id).orElseThrow(() -> new NotFoundException("No product found for this ID."));
+        entity.setBoughtProduct(isProductBought);
+
+        return repository.save(entity);
     }
 }

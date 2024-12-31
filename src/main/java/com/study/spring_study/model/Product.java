@@ -23,7 +23,9 @@ public class Product implements Serializable{
     private Long id;
     @Column(nullable=false)
     private String name;
-    @Column(nullable=false, length=240)
+    @Column(name="bought_product", nullable = false)
+    private boolean boughtProduct;
+    @Column(length=240)
     private String description;
     @Column
     private String picture;
