@@ -1,3 +1,4 @@
+#to-do: fix compose, broken connection between api and database
 services:
   database:
     image: mysql:8.0
