@@ -1,23 +1,35 @@
-#to-do: fix compose, broken connection between api and database
 services:
-  database:
+  sql:
     image: mysql:8.0
-    env_file:
-      - ./database.env
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     ports:
       - 3306:3306
     networks:
-      - wist-app-networks
+      - wist-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h sql --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   api:
+    depends_on:
+      sql:
+        condition: service_healthy
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+    - SPRING_DATASOURCE_URL=jdbc:mysql://sql:3306/${MYSQL_DATABASE}
+    - SPRING_DATASOURCE_USERNAME=root
+    - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - 8080:8080
+    restart: always
     networks:
-      - wist-app-networks
-    depends_on:
-      - database
+      - wist-network
 networks:
-    wist-app-networks:
-      driver: bridge
+  wist-network:
+    driver: bridge
