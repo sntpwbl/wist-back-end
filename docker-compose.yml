@@ -18,7 +18,8 @@ services:
     depends_on:
       sql:
         condition: service_healthy
-    image: sntpwbl/wist-api:1.0
+    # image: sntpwbl/wist-api:1.0
+    build: .
     environment:
     - SPRING_DATASOURCE_URL=jdbc:mysql://sql:3306/${MYSQL_DATABASE}
     - SPRING_DATASOURCE_USERNAME=root
