@@ -30,7 +30,7 @@ public class ProductService {
         Product entity = repository.findById(id).orElseThrow(() -> new NotFoundException("No product found for this ID."));
         
         entity.setName(product.getName());
-        product.setDescription(product.getDescription());
+        entity.setDescription(product.getDescription());
         entity.setPicture(product.getPicture());
         entity.setFirstStore(product.getFirstStore());
         entity.setFirstLink(product.getFirstLink());
