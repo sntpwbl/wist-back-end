@@ -32,13 +32,7 @@ public class ProductService {
         entity.setName(product.getName());
         entity.setDescription(product.getDescription());
         entity.setPicture(product.getPicture());
-        entity.setFirstStore(product.getFirstStore());
-        entity.setFirstLink(product.getFirstLink());
-        entity.setSecondStore(product.getSecondStore());
-        entity.setSecondLink(product.getSecondLink());
-        entity.setThirdStore(product.getThirdStore());
-        entity.setThirdLink(product.getThirdLink());
-
+        entity.setLinks(product.getLinks());
 
         return repository.save(entity);
     }
