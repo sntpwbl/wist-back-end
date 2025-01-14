@@ -3,10 +3,13 @@ package com.study.spring_study.mapper;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.dto.StoreLinkDTO;
 import com.study.spring_study.model.Product;
 
+@Component
 public class ProductDTOMapper implements Function<Product, ProductDTO> {
 
     @Override

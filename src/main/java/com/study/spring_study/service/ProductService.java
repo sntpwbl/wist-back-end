@@ -13,14 +13,17 @@ import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.repository.ProductRepository;
 
+
 @Service
 public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    @Autowired
-    private ProductDTOMapper productDTOMapper;
+    private final ProductDTOMapper productDTOMapper;
 
+    public ProductService(ProductDTOMapper productDTOMapper) {
+        this.productDTOMapper = productDTOMapper;
+    }
     public List<ProductDTO> findAll() {
         return repository.findAll().stream().map(productDTOMapper).collect(Collectors.toList());
     }
@@ -38,7 +41,7 @@ public class ProductService {
         product.setBought(false);
         return repository.save(product);
     }
-    //TO-DO: fix the link update behavior, since its not updating, but it is creating new records persisting the old ones
+    
     public ProductDTO updateProduct(ProductDTO productDTO, Long id) {
         Product product = repository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
@@ -61,14 +64,13 @@ public class ProductService {
         return productDTOMapper.apply(repository.save(product));
     }
 
-    //TO-DO: fix the not-changing bought status
     public ProductDTO changeProductBoughtStatus(Long id, boolean status) {
         Product product = repository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 
         product.setBought(status);
 
-        return productDTOMapper.apply(repository.save(product));
+        return productDTOMapper.apply(repository.saveAndFlush(product));
     }
     public void deleteProduct(Long id){
         repository.deleteById(id);

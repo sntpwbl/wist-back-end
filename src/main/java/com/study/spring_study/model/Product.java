@@ -41,7 +41,7 @@ public class Product{
     @Column
     private boolean bought;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = false, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<StoreLink> links = new ArrayList<>();
 
