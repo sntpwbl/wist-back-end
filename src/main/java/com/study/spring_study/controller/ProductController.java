@@ -49,7 +49,6 @@ public class ProductController {
             return link;
         }).collect(Collectors.toList());
 
-        // Cria o produto
         Product product = new Product();
         product.setName(dto.name());
         product.setDescription(dto.description());

@@ -13,8 +13,6 @@ import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.repository.ProductRepository;
 
-import jakarta.transaction.Transactional;
-
 @Service
 public class ProductService {
     @Autowired
@@ -23,19 +21,16 @@ public class ProductService {
     @Autowired
     private ProductDTOMapper productDTOMapper;
 
-    @Transactional
     public List<ProductDTO> findAll() {
         return repository.findAll().stream().map(productDTOMapper).collect(Collectors.toList());
     }
     
-    @Transactional
     public ProductDTO findById(Long id) {
         return repository.findById(id)
             .map(productDTOMapper)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
     }
     
-    @Transactional
     public Product createProduct(Product product, List<StoreLink> links){
         for (StoreLink link : links) {
             product.addLink(link); 
@@ -43,8 +38,7 @@ public class ProductService {
         product.setBought(false);
         return repository.save(product);
     }
-    
-    @Transactional
+    //TO-DO: fix the link update behavior, since its not updating, but it is creating new records persisting the old ones
     public ProductDTO updateProduct(ProductDTO productDTO, Long id) {
         Product product = repository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
@@ -66,7 +60,8 @@ public class ProductService {
 
         return productDTOMapper.apply(repository.save(product));
     }
-    @Transactional
+
+    //TO-DO: fix the not-changing bought status
     public ProductDTO changeProductBoughtStatus(Long id, boolean status) {
         Product product = repository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
