@@ -21,7 +21,6 @@ import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.service.ProductService;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
 
 @RestController
 @RequestMapping("/product")
