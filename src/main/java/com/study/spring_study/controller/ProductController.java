@@ -43,18 +43,18 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@RequestBody ProductDTO dto) {
-        List<StoreLink> links = dto.getLinks().stream().map(linkRequest -> {
+        List<StoreLink> links = dto.links().stream().map(linkRequest -> {
             StoreLink link = new StoreLink();
-            link.setStore(linkRequest.getStore());
-            link.setUrl(linkRequest.getUrl());
+            link.setStore(linkRequest.store());
+            link.setUrl(linkRequest.url());
             return link;
         }).collect(Collectors.toList());
 
         // Cria o produto
         Product product = new Product();
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPicture(dto.getPicture());
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPicture(dto.picture());
 
         Product savedProduct = service.createProduct(product, links);
         return ResponseEntity.ok(savedProduct);

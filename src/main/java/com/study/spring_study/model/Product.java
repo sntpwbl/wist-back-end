@@ -39,7 +39,7 @@ public class Product{
     private String picture;
 
     @Column
-    private boolean bought = false;
+    private boolean bought;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, orphanRemoval = false, cascade = CascadeType.ALL)
     @JsonManagedReference
