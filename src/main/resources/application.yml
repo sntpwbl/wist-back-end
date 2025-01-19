@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Wist
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate.ddl-auto: update
+    show-sql: false
+    open-in-view: false
