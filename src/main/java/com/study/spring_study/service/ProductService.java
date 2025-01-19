@@ -13,7 +13,7 @@ import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.repository.ProductRepository;
 
-
+//TO-DO: add hateoas to service methods
 @Service
 public class ProductService {
     @Autowired
