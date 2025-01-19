@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.exception.NotFoundException;
+import com.study.spring_study.exception.NullRequiredObjectException;
 import com.study.spring_study.mapper.ProductDTOMapper;
 import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
@@ -34,7 +35,8 @@ public class ProductService {
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
     }
     
-    public Product createProduct(Product product, List<StoreLink> links){
+    public Product createProduct(Product product, List<StoreLink> links) throws NullRequiredObjectException{
+        if(product == null) throw new NullRequiredObjectException();
         for (StoreLink link : links) {
             product.addLink(link); 
         }
@@ -43,6 +45,7 @@ public class ProductService {
     }
     
     public ProductDTO updateProduct(ProductDTO productDTO, Long id) {
+        if(productDTO == null) throw new NullRequiredObjectException();
         Product product = repository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 

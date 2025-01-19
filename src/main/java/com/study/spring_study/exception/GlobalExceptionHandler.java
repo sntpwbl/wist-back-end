@@ -23,4 +23,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "404");
         return new ResponseEntity<>(er, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(NullRequiredObjectException.class)
+    public ResponseEntity<ExceptionResponse> handleNullRequiredObjectException(Exception ex, WebRequest request){
+        ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "400");
+        return new ResponseEntity<>(er, HttpStatus.BAD_REQUEST);
+    }
 }
