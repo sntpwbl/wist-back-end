@@ -12,7 +12,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -45,9 +44,6 @@ public class Product{
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<StoreLink> storeLinks = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "products")
-    private List<ProductList> lists = new ArrayList<>();
 
     public void addLink(StoreLink link) {
         storeLinks.add(link);
