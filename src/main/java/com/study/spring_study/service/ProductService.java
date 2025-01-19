@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +85,7 @@ public class ProductService {
         product.setDescription(productDTO.description());
         product.setPicture(productDTO.picture());
 
-        List<StoreLink> updatedLinks = productDTO.links().stream().map(linkDTO -> {
+        List<StoreLink> updatedLinks = productDTO.storeLinks().stream().map(linkDTO -> {
             StoreLink link = new StoreLink();
             link.setStore(linkDTO.store());
             link.setUrl(linkDTO.url());
@@ -94,8 +93,8 @@ public class ProductService {
             return link;
         }).collect(Collectors.toList());
 
-        product.getLinks().clear();
-        product.getLinks().addAll(updatedLinks);
+        product.getStoreLinks().clear();
+        product.getStoreLinks().addAll(updatedLinks);
         repository.save(product);
         ProductDTO dto = productDTOMapper.apply(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);

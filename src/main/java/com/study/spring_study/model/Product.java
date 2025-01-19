@@ -43,15 +43,15 @@ public class Product{
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<StoreLink> links = new ArrayList<>();
+    private List<StoreLink> storeLinks = new ArrayList<>();
 
     public void addLink(StoreLink link) {
-        links.add(link);
+        storeLinks.add(link);
         link.setProduct(this);
     }
 
     public void removeLink(StoreLink link) {
-        links.remove(link);
+        storeLinks.remove(link);
         link.setProduct(null);
     }
 }

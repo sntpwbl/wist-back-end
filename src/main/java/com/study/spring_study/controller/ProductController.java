@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +43,7 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<EntityModel<ProductDTO>> createProduct(@RequestBody ProductDTO dto) {
-        List<StoreLink> links = dto.links().stream().map(linkRequest -> {
+        List<StoreLink> links = dto.storeLinks().stream().map(linkRequest -> {
             StoreLink link = new StoreLink();
             link.setStore(linkRequest.store());
             link.setUrl(linkRequest.url());
