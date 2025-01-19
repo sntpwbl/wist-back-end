@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import com.study.spring_study.controller.ProductController;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.exception.NotFoundException;
 import com.study.spring_study.mapper.ProductDTOMapper;
@@ -28,10 +31,15 @@ public class ProductService {
         return repository.findAll().stream().map(productDTOMapper).collect(Collectors.toList());
     }
     
-    public ProductDTO findById(Long id) {
-        return repository.findById(id)
+    public EntityModel<ProductDTO> findById(Long id) {
+
+        ProductDTO product = repository.findById(id)
             .map(productDTOMapper)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
+        
+        EntityModel<ProductDTO> model = EntityModel.of(product);
+        model.add(linkTo(methodOn(ProductController.class).findById(id)).withSelfRel());
+        return model;
     }
     
     public Product createProduct(Product product, List<StoreLink> links){
@@ -50,7 +58,7 @@ public class ProductService {
         product.setDescription(productDTO.description());
         product.setPicture(productDTO.picture());
 
-        List<StoreLink> updatedLinks = productDTO.links().stream().map(linkDTO -> {
+        List<StoreLink> updatedLinks = productDTO.storeLinks().stream().map(linkDTO -> {
             StoreLink link = new StoreLink();
             link.setStore(linkDTO.store());
             link.setUrl(linkDTO.url());
@@ -58,8 +66,8 @@ public class ProductService {
             return link;
         }).collect(Collectors.toList());
 
-        product.getLinks().clear();
-        product.getLinks().addAll(updatedLinks);
+        product.getStoreLinks().clear();
+        product.getStoreLinks().addAll(updatedLinks);
 
         return productDTOMapper.apply(repository.save(product));
     }

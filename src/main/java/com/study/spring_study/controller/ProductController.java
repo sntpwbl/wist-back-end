@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,14 +36,14 @@ public class ProductController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
-        ProductDTO productDTO = service.findById(id);
+    public ResponseEntity<EntityModel<ProductDTO>> findById(@PathVariable Long id) {
+        EntityModel<ProductDTO> productDTO = service.findById(id);
         return ResponseEntity.ok().body(productDTO);
     }
 
     @PostMapping("/create")
     public ResponseEntity<Product> createProduct(@RequestBody ProductDTO dto) {
-        List<StoreLink> links = dto.links().stream().map(linkRequest -> {
+        List<StoreLink> links = dto.storeLinks().stream().map(linkRequest -> {
             StoreLink link = new StoreLink();
             link.setStore(linkRequest.store());
             link.setUrl(linkRequest.url());

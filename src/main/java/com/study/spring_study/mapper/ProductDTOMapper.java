@@ -14,7 +14,7 @@ public class ProductDTOMapper implements Function<Product, ProductDTO> {
 
     @Override
     public ProductDTO apply(Product product){
-        return new ProductDTO(product.getId(), product.getName(), product.getDescription(), product.getPicture(), product.isBought(), product.getLinks()
+        return new ProductDTO(product.getId(), product.getName(), product.getDescription(), product.getPicture(), product.isBought(), product.getStoreLinks()
         .stream()
         .map(link -> {
             return new StoreLinkDTO(link.getStore(), link.getUrl());
