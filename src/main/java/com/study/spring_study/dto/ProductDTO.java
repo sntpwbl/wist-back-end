@@ -8,6 +8,6 @@ public record ProductDTO(
     String description,
     String picture,
     boolean bought,
-    List<StoreLinkDTO> storeLinks
-){
+    List<StoreLinkDTO> links
+) {
 }
