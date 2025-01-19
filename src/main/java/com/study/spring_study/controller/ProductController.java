@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,18 +32,18 @@ public class ProductController {
     private ProductService service;
 
     @GetMapping("/find-all")
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+    public ResponseEntity<List<EntityModel<ProductDTO>>> getAllProducts() {
         return ResponseEntity.ok(service.findAll());
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
-        ProductDTO productDTO = service.findById(id);
-        return ResponseEntity.ok().body(productDTO);
+    public ResponseEntity<EntityModel<ProductDTO>> findById(@PathVariable Long id) {
+        EntityModel<ProductDTO> model = service.findById(id);
+        return ResponseEntity.ok().body(model);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Product> createProduct(@RequestBody ProductDTO dto) {
+    public ResponseEntity<EntityModel<ProductDTO>> createProduct(@RequestBody ProductDTO dto) {
         List<StoreLink> links = dto.links().stream().map(linkRequest -> {
             StoreLink link = new StoreLink();
             link.setStore(linkRequest.store());
@@ -54,23 +56,23 @@ public class ProductController {
         product.setDescription(dto.description());
         product.setPicture(dto.picture());
 
-        Product savedProduct = service.createProduct(product, links);
+        EntityModel<ProductDTO> savedProduct = service.createProduct(product, links);
         return ResponseEntity.ok(savedProduct);
     }
     
     @PutMapping("/update/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO, @PathVariable Long id) {
-        ProductDTO updatedProduct = service.updateProduct(productDTO, id);
+    public ResponseEntity<EntityModel<ProductDTO>> updateProduct(@RequestBody ProductDTO productDTO, @PathVariable Long id) {
+        EntityModel<ProductDTO> updatedProduct = service.updateProduct(productDTO, id);
         return ResponseEntity.ok().body(updatedProduct);
     }
 
     @PatchMapping("/{id}/{status}")
-    public ResponseEntity<ProductDTO> changeProductBoughtStatus(@PathVariable Long id, @PathVariable boolean status){
-        ProductDTO updatedProductDTO = service.changeProductBoughtStatus(id, status);
+    public ResponseEntity<EntityModel<ProductDTO>> changeProductBoughtStatus(@PathVariable Long id, @PathVariable boolean status){
+        EntityModel<ProductDTO> updatedProductDTO = service.changeProductBoughtStatus(id, status);
         return ResponseEntity.ok().body(updatedProductDTO);
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deletePerson(@PathVariable Long id){
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id){
         service.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
