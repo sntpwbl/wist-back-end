@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 
 
 @RestController
@@ -39,7 +40,7 @@ public class ProductController {
     private ProductService service;
 
     @GetMapping("/find-all")
-    @Operation(summary = "Returns all created products", description = "Returns all created and storaged products.", tags={"Product"}, responses = {
+    @Operation(summary = "Returns all created products", description = "Returns all created and storaged products. Does not return XML.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class)))),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
@@ -49,9 +50,13 @@ public class ProductController {
         return ResponseEntity.ok(service.findAll());
     }
     
-    @GetMapping("/{id}")
+
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(summary = "Returns one single product", description = "Returns one single product by its identification.", tags={"Product"}, responses = {
-        @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class))),
+        @ApiResponse(description= "Success", responseCode = "200", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
+            @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
+        }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
@@ -62,9 +67,13 @@ public class ProductController {
         return ResponseEntity.ok().body(model);
     }
 
-    @PostMapping("/create")
+
+    @PostMapping(value = "/create", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(summary = "Creates one single product", description = "Creates one single product by passing all of the required fields.", tags={"Product"}, responses = {
-        @ApiResponse(description= "Success", responseCode = "201", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class))),
+        @ApiResponse(description= "Success", responseCode = "201", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
+            @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
+        }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
@@ -86,9 +95,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct);
     }
     
-    @PutMapping("/update/{id}")
+
+    @PutMapping(value = "/update/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(summary = "Updates one single product", description = "Updates one single product using its identification and all of the required fields.", tags={"Product"}, responses = {
-        @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class))),
+        @ApiResponse(description= "Success", responseCode = "200", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
+            @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
+        }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
@@ -99,9 +112,13 @@ public class ProductController {
         return ResponseEntity.ok().body(updatedProduct);
     }
 
-    @PatchMapping("/{id}/{status}")
+
+    @PatchMapping(value = "/{id}/{status}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(summary = "Changes the products bought status", description = "Use the identification of a product and a boolean value to change its bought status.", tags={"Product"}, responses = {
-        @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class))),
+        @ApiResponse(description= "Success", responseCode = "200", content = {
+            @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
+            @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
+        }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
@@ -111,6 +128,8 @@ public class ProductController {
         EntityModel<ProductDTO> updatedProductDTO = service.changeProductBoughtStatus(id, status);
         return ResponseEntity.ok().body(updatedProductDTO);
     }
+
+
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Deletes one single product", description = "Deletes one single product by using its identification.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "204", content = @Content),

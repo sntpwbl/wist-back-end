@@ -7,3 +7,9 @@ spring:
     hibernate.ddl-auto: update
     show-sql: false
     open-in-view: false
+  mvc:
+    contentnegotiation:
+      favor-parameter: true
+      media-types:
+        xml: application/xml
+        json: application/json

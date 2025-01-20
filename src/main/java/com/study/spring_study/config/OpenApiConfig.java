@@ -16,8 +16,6 @@ public class OpenApiConfig {
             .title("Wist")
             .version("v1")
             .description("Product service for the Wist platform")
-            // .termsOfService("")
-            // .license(new License().name("Apache 2.0").url(""))
         );
     }
 }
