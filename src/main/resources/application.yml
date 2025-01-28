@@ -1,3 +1,8 @@
+security:
+  jwt:
+    token:
+      secret-key: ${JWT-SECRET-KEY}
+      expire-length: ${JWT-EXPIRE-LENGTH}
 spring:
   application:
     name: Wist
