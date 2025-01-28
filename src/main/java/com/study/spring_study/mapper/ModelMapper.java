@@ -14,8 +14,8 @@ public interface ModelMapper {
 
     ModelMapper INSTANCE = Mappers.getMapper(ModelMapper.class);
 
-    @Mapping(source = "userId", target = "userId")
-    ProductDTO productToDTO(Product p);
+    // @Mapping(source = "userId", target = "userId")
+    // ProductDTO productToDTO(Product p);
 
     @Mapping(source = "url", target = "url")
     StoreLinkDTO linkToDTO(StoreLink link);

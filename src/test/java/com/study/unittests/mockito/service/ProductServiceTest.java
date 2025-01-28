@@ -25,7 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 // import com.study.spring_study.model.Product;
 // import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.repository.ProductRepository;
-import com.study.spring_study.service.ProductService;
+// import com.study.spring_study.service.ProductService;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +33,8 @@ public class ProductServiceTest {
     @Mock
     private ProductRepository repository;
 
-    @InjectMocks
-    private ProductService service;
+    // @InjectMocks
+    // private ProductService service;
     
     @BeforeEach
     void setUp() throws Exception{

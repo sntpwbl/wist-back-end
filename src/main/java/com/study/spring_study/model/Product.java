@@ -49,7 +49,7 @@ public class Product{
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    private Long userId;
+    private User user;
 
     public void addLink(StoreLink link) {
         storeLinks.add(link);

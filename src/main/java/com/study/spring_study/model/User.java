@@ -56,7 +56,7 @@ public class User implements UserDetails {
     @JoinTable(name = "user_permission", joinColumns = {@JoinColumn (name = "id_user")}, inverseJoinColumns = {@JoinColumn (name = "id_permission")})
     private List<Permission> permissions;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Product> products;
 
     public List<String> getRoles(){
