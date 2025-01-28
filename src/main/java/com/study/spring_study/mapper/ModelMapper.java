@@ -6,16 +6,21 @@ import org.mapstruct.factory.Mappers;
 
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.dto.StoreLinkDTO;
+import com.study.spring_study.dto.UserDTO;
 import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
+import com.study.spring_study.model.User;
 
 @Mapper
 public interface ModelMapper {
 
     ModelMapper INSTANCE = Mappers.getMapper(ModelMapper.class);
-
-    // @Mapping(source = "userId", target = "userId")
-    // ProductDTO productToDTO(Product p);
+    
+    @Mapping(source = "username", target = "userName")
+    UserDTO userToDTO(User user);
+    
+    @Mapping(source = "user", target = "user")
+    ProductDTO productToDTO(Product p);
 
     @Mapping(source = "url", target = "url")
     StoreLinkDTO linkToDTO(StoreLink link);
