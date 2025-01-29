@@ -36,6 +36,9 @@ public class User implements UserDetails {
 
     @Column(name = "user_name", unique = true)
     private String userName;
+    
+    @Column(name = "full_name")
+    private String fullName;
 
     @Column
     private String password;

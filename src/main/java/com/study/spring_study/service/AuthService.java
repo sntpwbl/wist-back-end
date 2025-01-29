@@ -13,9 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.study.spring_study.dto.AccountCredentialsDTO;
+import com.study.spring_study.dto.CreateAccountDTO;
 import com.study.spring_study.dto.TokenDTO;
 import com.study.spring_study.dto.UserDTO;
 import com.study.spring_study.exception.NullRequiredObjectException;
+import com.study.spring_study.exception.PasswordValidationException;
 import com.study.spring_study.exception.SignedUpUsernameException;
 import com.study.spring_study.mapper.ModelMapper;
 import com.study.spring_study.model.Permission;
@@ -72,38 +74,40 @@ public class AuthService {
         }
     }
 
-    public UserDTO commonUserSignUp(AccountCredentialsDTO credentialsDTO){
+    public UserDTO commonUserSignUp(CreateAccountDTO createDto){
         try {
-            // if(!validateUserCredentials(credentialsDTO)){
-            //     throw new NullRequiredObjectException("Username and password fields are both required.");
-            // } else {
-                User checkIfUsernameExists = userRepository.findByUsername(credentialsDTO.userName());
+            if(areUserCredentialsInvalid(createDto)){
+                throw new NullRequiredObjectException("Required field not sent.");
+            } else if(!createDto.password().equals(createDto.repeatPassword()) ){
+                throw new PasswordValidationException("Passwords do not match.");
+            } else {
+                User checkIfUsernameExists = userRepository.findByUsername(createDto.userName());
                 if(checkIfUsernameExists != null) throw new SignedUpUsernameException();
                 else {
                     User newUser = new User();
                     Permission permission = permissionRepository.findByDescription("USER");
-                    newUser.setUserName(credentialsDTO.userName());
-                    newUser.setPassword(passwordEncoder.encode(credentialsDTO.password()));
+                    newUser.setUserName(createDto.userName());
+                    newUser.setFullName(createDto.fullName());
+                    newUser.setPassword(passwordEncoder.encode(createDto.password()));
                     newUser.addPermission(permission);
 
                     UserDTO createdUserToDTO = mapper.userToDTO(userRepository.save(newUser));
                     return createdUserToDTO;
-                // }
+                }
             }
         } catch (NullRequiredObjectException e) {
-            e.printStackTrace();
             throw new NullRequiredObjectException(e.getMessage());
+        } catch (PasswordValidationException e) {
+            throw new PasswordValidationException(e.getMessage());
         } catch (SignedUpUsernameException e) {
-            e.printStackTrace();
             throw new SignedUpUsernameException(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
             throw new InternalAuthenticationServiceException(e.getMessage());
         }
     }
 
-    private boolean validateUserCredentials(AccountCredentialsDTO credentialsDTO) {
-        return credentialsDTO == null || credentialsDTO.userName() == null || credentialsDTO.userName().isBlank()
-        || credentialsDTO.password() == null || credentialsDTO.password().isBlank();
+    private boolean areUserCredentialsInvalid(CreateAccountDTO createDTO) {
+        return createDTO == null || createDTO.userName() == null || createDTO.fullName() == null ||
+            createDTO.password() == null || createDTO.repeatPassword() == null;
     }
 }

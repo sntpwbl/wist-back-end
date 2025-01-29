@@ -28,6 +28,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "400");
         return new ResponseEntity<>(er, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(PasswordValidationException.class)
+    public ResponseEntity<ExceptionResponse> handlePasswordValidationException(Exception ex, WebRequest request){
+        ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "400");
+        return new ResponseEntity<>(er, HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(SignedUpUsernameException.class)
     public ResponseEntity<ExceptionResponse> handleSignedUpUsernameException(Exception ex, WebRequest request){
         ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "400");

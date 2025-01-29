@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.study.spring_study.dto.AccountCredentialsDTO;
+import com.study.spring_study.dto.CreateAccountDTO;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.dto.TokenDTO;
 import com.study.spring_study.dto.UserDTO;
@@ -58,7 +59,7 @@ public class AuthController {
         @ApiResponse(description= "Username already taken", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<UserDTO> signUp(@RequestBody AccountCredentialsDTO dto){
+    public ResponseEntity<UserDTO> signUp(@RequestBody CreateAccountDTO dto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.commonUserSignUp(dto));
     }
     
