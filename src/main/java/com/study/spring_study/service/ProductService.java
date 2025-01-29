@@ -14,6 +14,7 @@ import com.study.spring_study.controller.ProductController;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.exception.NotFoundException;
 import com.study.spring_study.exception.NullRequiredObjectException;
+import com.study.spring_study.exception.UnmatchedTokenAndReqIdsException;
 import com.study.spring_study.mapper.ModelMapper;
 import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
@@ -148,5 +149,9 @@ public class ProductService {
         productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
         productRepository.deleteById(id);
+    }
+
+    public void tokenUserIdEqualToReqUserIdVerification(Long tokenUserId, Long reqUserId){
+        if(tokenUserId!=reqUserId) throw new UnmatchedTokenAndReqIdsException();
     }
 }

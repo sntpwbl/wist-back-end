@@ -43,4 +43,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "403");
         return new ResponseEntity<>(er, HttpStatus.FORBIDDEN);
     }
+    @ExceptionHandler(UnmatchedTokenAndReqIdsException.class)
+    public ResponseEntity<ExceptionResponse> handleUnmatchedTokenAndReqIdsException(Exception ex, WebRequest request){
+        ExceptionResponse er = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false), "403");
+        return new ResponseEntity<>(er, HttpStatus.FORBIDDEN);
+    }
 }

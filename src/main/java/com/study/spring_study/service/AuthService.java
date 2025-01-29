@@ -75,34 +75,24 @@ public class AuthService {
     }
 
     public UserDTO commonUserSignUp(CreateAccountDTO createDto){
-        try {
-            if(areUserCredentialsInvalid(createDto)){
-                throw new NullRequiredObjectException("Required field not sent.");
-            } else if(!createDto.password().equals(createDto.repeatPassword()) ){
-                throw new PasswordValidationException("Passwords do not match.");
-            } else {
-                User checkIfUsernameExists = userRepository.findByUsername(createDto.userName());
-                if(checkIfUsernameExists != null) throw new SignedUpUsernameException();
-                else {
-                    User newUser = new User();
-                    Permission permission = permissionRepository.findByDescription("USER");
-                    newUser.setUserName(createDto.userName());
-                    newUser.setFullName(createDto.fullName());
-                    newUser.setPassword(passwordEncoder.encode(createDto.password()));
-                    newUser.addPermission(permission);
+        if(areUserCredentialsInvalid(createDto)){
+            throw new NullRequiredObjectException("Required field not sent.");
+        } else if(!createDto.password().equals(createDto.repeatPassword()) ){
+            throw new PasswordValidationException("Passwords do not match.");
+        } else {
+            User checkIfUsernameExists = userRepository.findByUsername(createDto.userName());
+            if(checkIfUsernameExists != null) throw new SignedUpUsernameException();
+            else {
+                User newUser = new User();
+                Permission permission = permissionRepository.findByDescription("USER");
+                newUser.setUserName(createDto.userName());
+                newUser.setFullName(createDto.fullName());
+                newUser.setPassword(passwordEncoder.encode(createDto.password()));
+                newUser.addPermission(permission);
 
-                    UserDTO createdUserToDTO = mapper.userToDTO(userRepository.save(newUser));
-                    return createdUserToDTO;
-                }
+                UserDTO createdUserToDTO = mapper.userToDTO(userRepository.save(newUser));
+                return createdUserToDTO;
             }
-        } catch (NullRequiredObjectException e) {
-            throw new NullRequiredObjectException(e.getMessage());
-        } catch (PasswordValidationException e) {
-            throw new PasswordValidationException(e.getMessage());
-        } catch (SignedUpUsernameException e) {
-            throw new SignedUpUsernameException(e.getMessage());
-        } catch (Exception e) {
-            throw new InternalAuthenticationServiceException(e.getMessage());
         }
     }
 
