@@ -42,6 +42,21 @@ public class ProductService {
 
         return products;
     }
+    public List<EntityModel<ProductDTO>> findProductsByUserId(Long userId) {
+        
+        List<EntityModel<ProductDTO>> products = repository.findProductsByUserId(userId).stream().map(product ->{
+                ProductDTO dto = mapper.productToDTO(product);
+                EntityModel<ProductDTO> model = EntityModel.of(dto);
+                model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
+                model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
+                model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
+
+                return model;
+            }
+        ).collect(Collectors.toList());
+
+        return products;
+    }
     
     public EntityModel<ProductDTO> findById(Long id) {
         ProductDTO dto = repository.findById(id)

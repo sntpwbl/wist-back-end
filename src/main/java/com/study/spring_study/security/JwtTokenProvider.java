@@ -48,7 +48,7 @@ public class JwtTokenProvider {
         algorithm = Algorithm.HMAC256(secretKey.getBytes());
     }
     
-    public TokenDTO createAccessTokenObject(String username, List<String> roles){
+    public TokenDTO createAccessTokenObject(Long id, String username, List<String> roles){
         Date tokenCreationTimestamp = new Date();
         Date tokenExpirationTime = new Date(tokenCreationTimestamp.getTime() + refreshTokenExpireLengthInMs);
         
@@ -57,14 +57,15 @@ public class JwtTokenProvider {
             true, 
             tokenCreationTimestamp, 
             tokenExpirationTime, 
-            getAccessToken(username, roles, tokenCreationTimestamp, tokenExpirationTime), 
-            getRefreshToken(username, roles, tokenCreationTimestamp));
+            getAccessToken(id, username, roles, tokenCreationTimestamp, tokenExpirationTime), 
+            getRefreshToken(id, username, roles, tokenCreationTimestamp));
         }
         
-    public String getAccessToken(String username, List<String> roles, Date tokenCreationTimestamp, Date tokenExpirationTime) {
+    public String getAccessToken(Long id, String username, List<String> roles, Date tokenCreationTimestamp, Date tokenExpirationTime) {
         String issuerUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         
         return JWT.create()
+            .withClaim("id", id)
             .withClaim("roles", roles)
             .withIssuedAt(tokenCreationTimestamp)
             .withExpiresAt(tokenExpirationTime)
@@ -74,10 +75,11 @@ public class JwtTokenProvider {
             .strip();
     }
 
-    public String getRefreshToken(String username, List<String> roles, Date tokenCreationTimestamp) {
+    public String getRefreshToken(Long id, String username, List<String> roles, Date tokenCreationTimestamp) {
         String issuerUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         
         return JWT.create()
+            .withClaim("id", id)
             .withClaim("roles", roles)
             .withIssuedAt(tokenCreationTimestamp)
             .withSubject(username)

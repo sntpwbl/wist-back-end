@@ -65,7 +65,7 @@ public class AuthService {
             );
             User user = userRepository.findByUsername(credentialsDTO.userName());
             if(user != null){
-                return tokenProvider.createAccessTokenObject(user.getUsername(), user.getRoles());
+                return tokenProvider.createAccessTokenObject(user.getId(), user.getUsername(), user.getRoles());
 
             } else throw new UsernameNotFoundException("User not found.");
         } catch (Exception e) {

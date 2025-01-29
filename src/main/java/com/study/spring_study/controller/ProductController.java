@@ -39,17 +39,16 @@ public class ProductController {
     @Autowired
     private ProductService service;
 
-    @GetMapping("/find-all")
-    @Operation(summary = "Returns all created products", description = "Returns all created and storaged products. Does not return XML.", tags={"Product"}, responses = {
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Returns a users' products", description = "Returns all created and storaged products. Does not return XML.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class)))),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<List<EntityModel<ProductDTO>>> getAllProducts() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<List<EntityModel<ProductDTO>>> getAllProducts(Long userId) {
+        return ResponseEntity.ok(service.findProductsByUserId(userId));
     }
-    
 
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(summary = "Returns one single product", description = "Returns one single product by its identification.", tags={"Product"}, responses = {

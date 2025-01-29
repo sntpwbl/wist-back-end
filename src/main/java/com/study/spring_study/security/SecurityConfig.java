@@ -47,8 +47,8 @@ public class SecurityConfig {
                         "/webjars/**"
                     ).permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers("/all/**").hasAuthority("ADMIN")
+                .requestMatchers("/product/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers("/adm/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
         .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
