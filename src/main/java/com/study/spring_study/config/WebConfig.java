@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     MappingJackson2XmlHttpMessageConverter xmlHttpMessageConverter() {
         XmlMapper xmlMapper = new XmlMapper();
-        xmlMapper.registerModule(new Jackson2HalModule()); // Necessário para suporte ao HATEOAS
+        xmlMapper.registerModule(new Jackson2HalModule());
         return new MappingJackson2XmlHttpMessageConverter(xmlMapper);
     }
 
