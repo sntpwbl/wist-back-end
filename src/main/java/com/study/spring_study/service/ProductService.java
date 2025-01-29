@@ -14,27 +14,23 @@ import com.study.spring_study.controller.ProductController;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.exception.NotFoundException;
 import com.study.spring_study.exception.NullRequiredObjectException;
-import com.study.spring_study.mapper.ProductDTOMapper;
+import com.study.spring_study.mapper.ModelMapper;
 import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.repository.ProductRepository;
 
-//TO-DO: add hateoas to service methods
 @Service
 public class ProductService {
     @Autowired
     private ProductRepository repository;
 
-    private final ProductDTOMapper productDTOMapper;
-
-    public ProductService(ProductDTOMapper productDTOMapper) {
-        this.productDTOMapper = productDTOMapper;
-    }
+    @Autowired
+    private ModelMapper mapper;
 
     public List<EntityModel<ProductDTO>> findAll() {
         
         List<EntityModel<ProductDTO>> products = repository.findAll().stream().map(product ->{
-                ProductDTO dto = productDTOMapper.apply(product);
+                ProductDTO dto = mapper.productToDTO(product);
                 EntityModel<ProductDTO> model = EntityModel.of(dto);
                 model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
                 model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
@@ -49,7 +45,7 @@ public class ProductService {
     
     public EntityModel<ProductDTO> findById(Long id) {
         ProductDTO dto = repository.findById(id)
-            .map(productDTOMapper)
+            .map(p -> mapper.productToDTO(p))
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
         EntityModel<ProductDTO> model = EntityModel.of(dto);
 
@@ -66,7 +62,7 @@ public class ProductService {
             product.addLink(link); 
         }
         product.setBought(false);
-        ProductDTO dto = productDTOMapper.apply(repository.save(product));
+        ProductDTO dto = mapper.productToDTO(repository.save(product));
         
         EntityModel<ProductDTO> model = EntityModel.of(dto);
         model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
@@ -96,7 +92,7 @@ public class ProductService {
         product.getStoreLinks().clear();
         product.getStoreLinks().addAll(updatedLinks);
         repository.save(product);
-        ProductDTO dto = productDTOMapper.apply(product);
+        ProductDTO dto = mapper.productToDTO(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);
         model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
         model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
@@ -111,7 +107,7 @@ public class ProductService {
         product.setBought(status);
         repository.saveAndFlush(product);
 
-        ProductDTO dto = productDTOMapper.apply(product);
+        ProductDTO dto = mapper.productToDTO(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);
         model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
         model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
