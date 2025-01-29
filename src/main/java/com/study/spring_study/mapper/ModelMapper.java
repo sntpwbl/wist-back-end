@@ -19,7 +19,7 @@ public interface ModelMapper {
     @Mapping(source = "username", target = "userName")
     UserDTO userToDTO(User user);
     
-    @Mapping(source = "user", target = "user")
+    @Mapping(source = "user.id", target = "userId")
     ProductDTO productToDTO(Product p);
 
     @Mapping(source = "url", target = "url")

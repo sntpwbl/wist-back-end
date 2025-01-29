@@ -7,7 +7,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public record ProductDTO(
     Long id,
-    UserDTO user,
+    Long userId,
     String name,
     String description,
     String picture,

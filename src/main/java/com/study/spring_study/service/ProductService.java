@@ -17,19 +17,30 @@ import com.study.spring_study.exception.NullRequiredObjectException;
 import com.study.spring_study.mapper.ModelMapper;
 import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
+import com.study.spring_study.model.User;
 import com.study.spring_study.repository.ProductRepository;
+import com.study.spring_study.repository.UserRepository;
+import com.study.spring_study.security.JwtUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class ProductService {
     @Autowired
-    private ProductRepository repository;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private ModelMapper mapper;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     public List<EntityModel<ProductDTO>> findAll() {
         
-        List<EntityModel<ProductDTO>> products = repository.findAll().stream().map(product ->{
+        List<EntityModel<ProductDTO>> products = productRepository.findAll().stream().map(product ->{
                 ProductDTO dto = mapper.productToDTO(product);
                 EntityModel<ProductDTO> model = EntityModel.of(dto);
                 model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
@@ -42,24 +53,25 @@ public class ProductService {
 
         return products;
     }
-    public List<EntityModel<ProductDTO>> findProductsByUserId(Long userId) {
-        
-        List<EntityModel<ProductDTO>> products = repository.findProductsByUserId(userId).stream().map(product ->{
-                ProductDTO dto = mapper.productToDTO(product);
-                EntityModel<ProductDTO> model = EntityModel.of(dto);
-                model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
-                model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
-                model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
-
-                return model;
-            }
+    public List<EntityModel<ProductDTO>> findProductsByUserId(HttpServletRequest request) {
+        Long userId = jwtUtil.getUserIdFromToken(request);
+        List<EntityModel<ProductDTO>> products = productRepository.findByUserId(userId).stream().map(product ->{
+            ProductDTO dto = mapper.productToDTO(product);
+            EntityModel<ProductDTO> model = EntityModel.of(dto);
+            model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
+            model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
+            model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
+            
+            return model;
+        }
         ).collect(Collectors.toList());
+        System.out.println(products.size());
 
         return products;
     }
     
     public EntityModel<ProductDTO> findById(Long id) {
-        ProductDTO dto = repository.findById(id)
+        ProductDTO dto = productRepository.findById(id)
             .map(p -> mapper.productToDTO(p))
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
         EntityModel<ProductDTO> model = EntityModel.of(dto);
@@ -71,13 +83,15 @@ public class ProductService {
         return model;
     }
     
-    public EntityModel<ProductDTO> createProduct(Product product, List<StoreLink> links) throws NullRequiredObjectException{
+    public EntityModel<ProductDTO> createProduct(Product product, List<StoreLink> links, HttpServletRequest request) throws NullRequiredObjectException{
         if(product == null) throw new NullRequiredObjectException();
+        User creatorUser = userRepository.findById(jwtUtil.getUserIdFromToken(request)).orElseThrow(() -> new NotFoundException("No user found for this ID."));
         for (StoreLink link : links) {
             product.addLink(link); 
         }
         product.setBought(false);
-        ProductDTO dto = mapper.productToDTO(repository.save(product));
+        product.setUser(creatorUser);
+        ProductDTO dto = mapper.productToDTO(productRepository.save(product));
         
         EntityModel<ProductDTO> model = EntityModel.of(dto);
         model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
@@ -89,7 +103,7 @@ public class ProductService {
     
     public EntityModel<ProductDTO> updateProduct(ProductDTO productDTO, Long id) {
         if(productDTO == null) throw new NullRequiredObjectException();
-        Product product = repository.findById(id)
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 
         product.setName(productDTO.name());
@@ -106,7 +120,7 @@ public class ProductService {
 
         product.getStoreLinks().clear();
         product.getStoreLinks().addAll(updatedLinks);
-        repository.save(product);
+        productRepository.save(product);
         ProductDTO dto = mapper.productToDTO(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);
         model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
@@ -116,11 +130,11 @@ public class ProductService {
     }
 
     public EntityModel<ProductDTO> changeProductBoughtStatus(Long id, boolean status) {
-        Product product = repository.findById(id)
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 
         product.setBought(status);
-        repository.saveAndFlush(product);
+        productRepository.saveAndFlush(product);
 
         ProductDTO dto = mapper.productToDTO(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);
@@ -131,8 +145,8 @@ public class ProductService {
     }
     
     public void deleteProduct(Long id){
-        repository.findById(id)
+        productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
-        repository.deleteById(id);
+        productRepository.deleteById(id);
     }
 }
