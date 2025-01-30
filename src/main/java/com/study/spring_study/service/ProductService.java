@@ -1,8 +1,5 @@
 package com.study.spring_study.service;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,11 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
-import com.study.spring_study.controller.ProductController;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.exception.NotFoundException;
 import com.study.spring_study.exception.NullRequiredObjectException;
-import com.study.spring_study.exception.UnmatchedTokenAndReqIdsException;
 import com.study.spring_study.mapper.ModelMapper;
 import com.study.spring_study.model.Product;
 import com.study.spring_study.model.StoreLink;
@@ -22,6 +17,7 @@ import com.study.spring_study.model.User;
 import com.study.spring_study.repository.ProductRepository;
 import com.study.spring_study.repository.UserRepository;
 import com.study.spring_study.security.JwtUtil;
+import com.study.spring_study.utils.Utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -55,12 +51,7 @@ public class ProductService {
         Long userId = jwtUtil.getUserIdFromToken(request);
         List<EntityModel<ProductDTO>> products = productRepository.findByUserId(userId).stream().map(product ->{
             ProductDTO dto = mapper.productToDTO(product);
-            EntityModel<ProductDTO> model = EntityModel.of(dto);
-            model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
-            model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
-            model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
-            
-            return model;
+            return Utils.createProductHateoasModel(dto, request);
         }
         ).collect(Collectors.toList());
 
@@ -71,12 +62,8 @@ public class ProductService {
         ProductDTO dto = productRepository.findById(id)
             .map(p -> mapper.productToDTO(p))
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
-        EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(id, request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, id, request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(id, request)).withSelfRel());
 
-        return model;
+            return Utils.createProductHateoasModel(dto, request);
     }
     
     public EntityModel<ProductDTO> createProduct(Product product, List<StoreLink> links, HttpServletRequest request) throws NullRequiredObjectException{
@@ -89,19 +76,14 @@ public class ProductService {
         product.setUser(creatorUser);
         ProductDTO dto = mapper.productToDTO(productRepository.save(product));
         
-        EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
-        
-        return model;
+        return Utils.createProductHateoasModel(dto, request);
     }
     
     public EntityModel<ProductDTO> updateProduct(ProductDTO productDTO, Long id, HttpServletRequest request) {
         if(productDTO == null) throw new NullRequiredObjectException();
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
-        tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        Utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         product.setName(productDTO.name());
         product.setDescription(productDTO.description());
@@ -119,40 +101,31 @@ public class ProductService {
         product.getStoreLinks().addAll(updatedLinks);
         productRepository.save(product);
         ProductDTO dto = mapper.productToDTO(product);
-        EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
-        return model;
+        return Utils.createProductHateoasModel(dto, request);
+
     }
 
     public EntityModel<ProductDTO> changeProductBoughtStatus(Long id, boolean status, HttpServletRequest request) {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 
-        tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        Utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         product.setBought(status);
         productRepository.saveAndFlush(product);
 
         ProductDTO dto = mapper.productToDTO(product);
-        EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
-        return model;
+        return Utils.createProductHateoasModel(dto, request);
+
     }
     
     public void deleteProduct(Long id, HttpServletRequest request){
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
         
-        tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        Utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
         
         productRepository.deleteById(id);
     }
 
-    public void tokenUserIdEqualToReqUserIdVerification(Long tokenUserId, Long reqUserId){
-        if(tokenUserId!=reqUserId) throw new UnmatchedTokenAndReqIdsException();
-    }
 }

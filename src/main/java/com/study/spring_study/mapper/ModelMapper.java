@@ -4,10 +4,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import com.study.spring_study.dto.ListDTO;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.dto.StoreLinkDTO;
 import com.study.spring_study.dto.UserDTO;
 import com.study.spring_study.model.Product;
+import com.study.spring_study.model.ProductList;
 import com.study.spring_study.model.StoreLink;
 import com.study.spring_study.model.User;
 
@@ -25,5 +27,7 @@ public interface ModelMapper {
     @Mapping(source = "url", target = "url")
     StoreLinkDTO linkToDTO(StoreLink link);
 
+    @Mapping(source = "user.id", target = "userId")
+    ListDTO listToDTO(ProductList list);
     
 }
