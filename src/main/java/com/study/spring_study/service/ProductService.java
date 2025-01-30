@@ -44,9 +44,6 @@ public class ProductService {
         List<EntityModel<ProductDTO>> products = productRepository.findAll().stream().map(product ->{
                 ProductDTO dto = mapper.productToDTO(product);
                 EntityModel<ProductDTO> model = EntityModel.of(dto);
-                model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
-                model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
-                model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
 
                 return model;
             }
@@ -59,27 +56,25 @@ public class ProductService {
         List<EntityModel<ProductDTO>> products = productRepository.findByUserId(userId).stream().map(product ->{
             ProductDTO dto = mapper.productToDTO(product);
             EntityModel<ProductDTO> model = EntityModel.of(dto);
-            model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
-            model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
-            model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
+            model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
+            model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
+            model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
             
             return model;
         }
         ).collect(Collectors.toList());
-        System.out.println(products.size());
 
         return products;
     }
     
-    public EntityModel<ProductDTO> findById(Long id) {
+    public EntityModel<ProductDTO> findById(Long id, HttpServletRequest request) {
         ProductDTO dto = productRepository.findById(id)
             .map(p -> mapper.productToDTO(p))
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
         EntityModel<ProductDTO> model = EntityModel.of(dto);
-
-        model.add(linkTo(methodOn(ProductController.class).findById(id)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, id)).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(id)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).findById(id, request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, id, request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).deleteProduct(id, request)).withSelfRel());
 
         return model;
     }
@@ -95,17 +90,18 @@ public class ProductService {
         ProductDTO dto = mapper.productToDTO(productRepository.save(product));
         
         EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
         
         return model;
     }
     
-    public EntityModel<ProductDTO> updateProduct(ProductDTO productDTO, Long id) {
+    public EntityModel<ProductDTO> updateProduct(ProductDTO productDTO, Long id, HttpServletRequest request) {
         if(productDTO == null) throw new NullRequiredObjectException();
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
+        tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         product.setName(productDTO.name());
         product.setDescription(productDTO.description());
@@ -124,30 +120,35 @@ public class ProductService {
         productRepository.save(product);
         ProductDTO dto = mapper.productToDTO(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
         return model;
     }
 
-    public EntityModel<ProductDTO> changeProductBoughtStatus(Long id, boolean status) {
+    public EntityModel<ProductDTO> changeProductBoughtStatus(Long id, boolean status, HttpServletRequest request) {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
+
+        tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         product.setBought(status);
         productRepository.saveAndFlush(product);
 
         ProductDTO dto = mapper.productToDTO(product);
         EntityModel<ProductDTO> model = EntityModel.of(dto);
-        model.add(linkTo(methodOn(ProductController.class).findById(dto.id())).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id())).withSelfRel());
-        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id())).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).findById(dto.id(), request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).updateProduct(dto, dto.id(), request)).withSelfRel());
+        model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
         return model;
     }
     
-    public void deleteProduct(Long id){
-        productRepository.findById(id)
+    public void deleteProduct(Long id, HttpServletRequest request){
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
+        
+        tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        
         productRepository.deleteById(id);
     }
 

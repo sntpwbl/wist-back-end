@@ -63,8 +63,8 @@ public class ProductController {
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<EntityModel<ProductDTO>> findById(@PathVariable Long id) {
-        EntityModel<ProductDTO> model = service.findById(id);
+    public ResponseEntity<EntityModel<ProductDTO>> findById(@PathVariable Long id, HttpServletRequest request) {
+        EntityModel<ProductDTO> model = service.findById(id, request);
         return ResponseEntity.ok().body(model);
     }
 
@@ -108,8 +108,8 @@ public class ProductController {
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<EntityModel<ProductDTO>> updateProduct(@RequestBody ProductDTO productDTO, @PathVariable Long id) {
-        EntityModel<ProductDTO> updatedProduct = service.updateProduct(productDTO, id);
+    public ResponseEntity<EntityModel<ProductDTO>> updateProduct(@RequestBody ProductDTO productDTO, @PathVariable Long id, HttpServletRequest request) {
+        EntityModel<ProductDTO> updatedProduct = service.updateProduct(productDTO, id, request);
         return ResponseEntity.ok().body(updatedProduct);
     }
 
@@ -125,8 +125,8 @@ public class ProductController {
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<EntityModel<ProductDTO>> changeProductBoughtStatus(@PathVariable Long id, @PathVariable boolean status){
-        EntityModel<ProductDTO> updatedProductDTO = service.changeProductBoughtStatus(id, status);
+    public ResponseEntity<EntityModel<ProductDTO>> changeProductBoughtStatus(@PathVariable Long id, @PathVariable boolean status, HttpServletRequest request){
+        EntityModel<ProductDTO> updatedProductDTO = service.changeProductBoughtStatus(id, status, request);
         return ResponseEntity.ok().body(updatedProductDTO);
     }
 
@@ -139,8 +139,8 @@ public class ProductController {
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id){
-        service.deleteProduct(id);
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id, HttpServletRequest request){
+        service.deleteProduct(id, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
