@@ -32,7 +32,6 @@ public class StoreLink {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")
-    // @JsonBackReference
     private Product product; 
 
 }

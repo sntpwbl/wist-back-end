@@ -1,19 +1,19 @@
 package com.study.spring_study.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,39 +23,31 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "product")
-public class Product{
-
+@Table(name = "list")
+public class ProductList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String name;
-
-    @Column(length = 240)
+    
+    @Column
     private String description;
 
-    @Column
-    private String picture;
-
-    @Column
-    private boolean bought;
-
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<StoreLink> storeLinks = new ArrayList<>();
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void addLink(StoreLink link) {
-        storeLinks.add(link);
-        link.setProduct(this);
-    }
+    @ManyToMany
+    @JoinTable(
+        name = "list_product",
+        joinColumns = @JoinColumn(name = "id_list"),
+        inverseJoinColumns = @JoinColumn(name = "id_product")
+    )
+    private List<Product> products = new ArrayList<>();
 
-    public void removeLink(StoreLink link) {
-        storeLinks.remove(link);
-        link.setProduct(null);
-    }
 }

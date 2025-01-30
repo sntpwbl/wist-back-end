@@ -62,6 +62,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Product> products;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<ProductList> productLists;
+
     public List<String> getRoles(){
         List<String> roles = new ArrayList<>();
         for(Permission permission : permissions){
