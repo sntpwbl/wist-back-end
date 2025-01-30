@@ -45,7 +45,6 @@ public class ProductController {
     @Operation(summary = "Returns a users' products", description = "Returns all created and storaged products. Does not return XML.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class)))),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
-        @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
     public ResponseEntity<List<EntityModel<ProductDTO>>> getAllProducts(HttpServletRequest request) {
@@ -53,13 +52,12 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    @Operation(summary = "Returns one single product", description = "Returns one single product by its identification.", tags={"Product"}, responses = {
+    @Operation(summary = "Returns a product", description = "Returns a product by its identification.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "200", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
             @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
         }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
-        @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
@@ -70,13 +68,12 @@ public class ProductController {
 
 
     @PostMapping(value = "/create", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    @Operation(summary = "Creates one single product", description = "Creates one single product by passing all of the required fields.", tags={"Product"}, responses = {
+    @Operation(summary = "Creates a product", description = "Creates a product by passing all of the required fields.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "201", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
             @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
         }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
-        @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
     public ResponseEntity<EntityModel<ProductDTO>> createProduct(@RequestBody ProductDTO dto, HttpServletRequest request) {
@@ -98,13 +95,12 @@ public class ProductController {
     
 
     @PutMapping(value = "/update/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
-    @Operation(summary = "Updates one single product", description = "Updates one single product using its identification and all of the required fields.", tags={"Product"}, responses = {
+    @Operation(summary = "Updates a product", description = "Updates a product using its identification and all of the required fields.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "200", content = {
             @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class)),
             @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
         }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
-        @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
@@ -121,7 +117,6 @@ public class ProductController {
             @Content(mediaType = "application/xml", schema = @Schema(implementation = ProductDTO.class)),
         }),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
-        @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
@@ -132,10 +127,9 @@ public class ProductController {
 
 
     @DeleteMapping("/delete/{id}")
-    @Operation(summary = "Deletes one single product", description = "Deletes one single product by using its identification.", tags={"Product"}, responses = {
+    @Operation(summary = "Deletes a product", description = "Deletes a product by using its identification.", tags={"Product"}, responses = {
         @ApiResponse(description= "Success", responseCode = "204", content = @Content),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
-        @ApiResponse(description= "Unauthorized", responseCode = "401", content = @Content),
         @ApiResponse(description= "Not found", responseCode = "404", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })

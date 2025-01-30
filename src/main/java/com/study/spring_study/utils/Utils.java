@@ -6,6 +6,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.hateoas.EntityModel;
 
 import com.study.spring_study.controller.ProductController;
+import com.study.spring_study.dto.CreateAccountDTO;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.exception.UnmatchedTokenAndReqIdsException;
 
@@ -24,5 +25,10 @@ public class Utils {
         model.add(linkTo(methodOn(ProductController.class).deleteProduct(dto.id(), request)).withSelfRel());
 
         return model;
+    }
+
+    public static boolean areUserCredentialsInvalid(CreateAccountDTO createDTO) {
+        return createDTO == null || createDTO.userName() == null || createDTO.fullName() == null ||
+            createDTO.password() == null || createDTO.repeatPassword() == null;
     }
 }

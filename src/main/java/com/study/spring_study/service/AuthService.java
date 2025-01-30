@@ -21,6 +21,7 @@ import com.study.spring_study.model.User;
 import com.study.spring_study.repository.PermissionRepository;
 import com.study.spring_study.repository.UserRepository;
 import com.study.spring_study.security.JwtTokenProvider;
+import com.study.spring_study.utils.Utils;
 
 @Service
 public class AuthService {
@@ -71,7 +72,7 @@ public class AuthService {
     }
 
     public UserDTO commonUserSignUp(CreateAccountDTO createDto){
-        if(areUserCredentialsInvalid(createDto)){
+        if(Utils.areUserCredentialsInvalid(createDto)){
             throw new NullRequiredObjectException("Required field not sent.");
         } else if(!createDto.password().equals(createDto.repeatPassword()) ){
             throw new PasswordValidationException("Passwords do not match.");
@@ -92,8 +93,4 @@ public class AuthService {
         }
     }
 
-    private boolean areUserCredentialsInvalid(CreateAccountDTO createDTO) {
-        return createDTO == null || createDTO.userName() == null || createDTO.fullName() == null ||
-            createDTO.password() == null || createDTO.repeatPassword() == null;
-    }
 }

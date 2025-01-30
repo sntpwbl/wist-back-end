@@ -47,7 +47,7 @@ public class SecurityConfig {
                         "/webjars/**"
                     ).permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/product/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers("/product/**", "/list/**").hasAnyAuthority("USER", "ADMIN")
                 .requestMatchers("/adm/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )

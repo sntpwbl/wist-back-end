@@ -42,12 +42,20 @@ public class ProductList {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "list_product",
         joinColumns = @JoinColumn(name = "id_list"),
         inverseJoinColumns = @JoinColumn(name = "id_product")
     )
     private List<Product> products = new ArrayList<>();
+
+    public ProductList(String name, String description, User user) {
+        this.name = name;
+        this.description = description;
+        this.user = user;
+    }
+
+    
 
 }

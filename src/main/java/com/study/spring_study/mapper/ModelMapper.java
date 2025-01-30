@@ -29,5 +29,7 @@ public interface ModelMapper {
 
     @Mapping(source = "user.id", target = "userId")
     ListDTO listToDTO(ProductList list);
+
+    
     
 }
