@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.study.spring_study.dto.AccountCredentialsDTO;
 import com.study.spring_study.dto.CreateAccountDTO;
-import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.dto.TokenDTO;
 import com.study.spring_study.dto.UserDTO;
 import com.study.spring_study.service.AuthService;
