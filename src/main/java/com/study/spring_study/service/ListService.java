@@ -59,6 +59,15 @@ public class ListService {
 
         return mapper.listToDTO(list);
     }
+
+    public List<ListDTO> findListsByUserId(HttpServletRequest request){
+        Long userId = jwtUtil.getUserIdFromToken(request);
+        List<ListDTO> list = listRepository.findByUserId(userId).stream().map(l -> {
+            return mapper.listToDTO(l);
+        }).collect(Collectors.toList());
+
+        return list;
+    }
     public ListDTO updateList(CreateListDTO dto, Long id, HttpServletRequest request){
         if(dto == null || dto.name() == null) throw new NullRequiredObjectException();
 

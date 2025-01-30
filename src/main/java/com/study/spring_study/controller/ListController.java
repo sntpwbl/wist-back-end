@@ -1,5 +1,7 @@
 package com.study.spring_study.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +13,6 @@ import com.study.spring_study.dto.CreateListDTO;
 import com.study.spring_study.dto.ListDTO;
 import com.study.spring_study.service.ListService;
 
-import io.micrometer.core.ipc.http.HttpSender.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,6 +55,15 @@ public class ListController {
     })
     public ResponseEntity<ListDTO> findList(@PathVariable Long id, HttpServletRequest request) {
         return ResponseEntity.ok(listService.findById(id, request));
+    }
+    @GetMapping("/user")
+    @Operation(summary = "Returns a users' lists", description = "Returns all created and storaged lists. Does not return XML.", tags={"Product"}, responses = {
+        @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ListDTO.class)))),
+        @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
+        @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
+    })
+    public ResponseEntity<List<ListDTO>> getUserLists(HttpServletRequest request) {
+        return ResponseEntity.ok(listService.findListsByUserId(request));
     }
     @PutMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     @Operation(summary = "Updates a list", description = "Updates a list by its ID.", tags={"List"}, responses = {

@@ -47,7 +47,7 @@ public class ProductController {
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<List<EntityModel<ProductDTO>>> getAllProducts(HttpServletRequest request) {
+    public ResponseEntity<List<EntityModel<ProductDTO>>> getUserProducts(HttpServletRequest request) {
         return ResponseEntity.ok(service.findProductsByUserId(request));
     }
 
