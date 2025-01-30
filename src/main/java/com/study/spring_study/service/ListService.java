@@ -11,8 +11,10 @@ import com.study.spring_study.dto.ListDTO;
 import com.study.spring_study.exception.NotFoundException;
 import com.study.spring_study.exception.NullRequiredObjectException;
 import com.study.spring_study.mapper.ModelMapper;
+import com.study.spring_study.model.Product;
 import com.study.spring_study.model.ProductList;
 import com.study.spring_study.repository.ListRepository;
+import com.study.spring_study.repository.ProductRepository;
 import com.study.spring_study.repository.UserRepository;
 import com.study.spring_study.security.JwtUtil;
 import com.study.spring_study.utils.Utils;
@@ -27,6 +29,8 @@ public class ListService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private ModelMapper mapper;
@@ -52,7 +56,7 @@ public class ListService {
     public ListDTO findById(Long id, HttpServletRequest request){
         ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
         Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
-        
+
         return mapper.listToDTO(list);
     }
     public ListDTO updateList(CreateListDTO dto, Long id, HttpServletRequest request){
@@ -66,7 +70,26 @@ public class ListService {
 
         return mapper.listToDTO(listRepository.save(list));
     }
+    public ListDTO addProductToList(Long productId, Long listId, HttpServletRequest request){
+        Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundException("List not found."));
+        ProductList list = listRepository.findById(listId).orElseThrow(() -> new NotFoundException("List not found."));
 
+        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        list.addProduct(product);
+
+        return mapper.listToDTO(listRepository.save(list));
+
+    }
+    public ListDTO removeProductFromList(Long productId, Long listId, HttpServletRequest request){
+        Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundException("List not found."));
+        ProductList list = listRepository.findById(listId).orElseThrow(() -> new NotFoundException("List not found."));
+
+        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        list.removeProduct(product);
+
+        return mapper.listToDTO(listRepository.save(list));
+
+    }
     public void deleteById(Long id, HttpServletRequest request){
         ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
         Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));

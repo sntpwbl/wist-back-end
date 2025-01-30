@@ -49,6 +49,14 @@ public class ProductList {
         inverseJoinColumns = @JoinColumn(name = "id_product")
     )
     private List<Product> products = new ArrayList<>();
+    
+    public void addProduct(Product product){
+        products.add(product);
+    }
+    public void removeProduct(Product product){
+        products.removeIf(p -> p.getId().equals(product.getId()));
+        // product.getLists().remove(this);
+    }
 
     public ProductList(String name, String description, User user) {
         this.name = name;
@@ -56,6 +64,6 @@ public class ProductList {
         this.user = user;
     }
 
-    
+
 
 }

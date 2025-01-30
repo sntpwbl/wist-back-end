@@ -49,6 +49,8 @@ public class Product{
     @JoinColumn(name = "user_id")
     private User user;
 
+    
+
     public void addLink(StoreLink link) {
         storeLinks.add(link);
         link.setProduct(this);
