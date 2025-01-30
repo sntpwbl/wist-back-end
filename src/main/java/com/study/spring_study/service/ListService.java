@@ -50,14 +50,17 @@ public class ListService {
     }
 
     public ListDTO findById(Long id, HttpServletRequest request){
-        Utils.tokenUserIdEqualToReqUserIdVerification(id, jwtUtil.getUserIdFromToken(request));
-        return mapper.listToDTO(listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found.")));
+        ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
+        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        
+        return mapper.listToDTO(list);
     }
     public ListDTO updateList(CreateListDTO dto, Long id, HttpServletRequest request){
-        Utils.tokenUserIdEqualToReqUserIdVerification(id, jwtUtil.getUserIdFromToken(request));
         if(dto == null || dto.name() == null) throw new NullRequiredObjectException();
-        ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
 
+        ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
+        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        
         list.setName(dto.name());
         list.setDescription(dto.description() != null ? dto.description() : list.getDescription());
 
@@ -65,10 +68,10 @@ public class ListService {
     }
 
     public void deleteById(Long id, HttpServletRequest request){
-        Utils.tokenUserIdEqualToReqUserIdVerification(id, jwtUtil.getUserIdFromToken(request));
-        listRepository.delete(
-            listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."))
-        );
+        ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
+        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+
+        listRepository.delete(list);
     }
 
 
