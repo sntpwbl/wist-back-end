@@ -86,13 +86,13 @@ public class ListController {
         return ResponseEntity.ok(listService.addProductToList(productId, listId, request));
     }
     @PatchMapping("/remove/{productId}/{listId}")
-    @Operation(summary = "Removes a product to a list", description = "Removes a product to a list.", tags={"List"}, responses = {
+    @Operation(summary = "Removes a product from a list", description = "Removes a product from a list.", tags={"List"}, responses = {
         @ApiResponse(description= "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListDTO.class))),
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Forbidden access", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> removeProductToList(@PathVariable Long productId, @PathVariable Long listId, HttpServletRequest request){
+    public ResponseEntity<ListDTO> removeProductFromList(@PathVariable Long productId, @PathVariable Long listId, HttpServletRequest request){
         return ResponseEntity.ok(listService.removeProductFromList(productId, listId, request));
     }
     @DeleteMapping("/{id}")
