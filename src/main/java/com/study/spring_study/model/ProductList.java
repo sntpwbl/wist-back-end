@@ -55,7 +55,6 @@ public class ProductList {
     }
     public void removeProduct(Product product){
         products.removeIf(p -> p.getId().equals(product.getId()));
-        // product.getLists().remove(this);
     }
 
     public ProductList(String name, String description, User user) {

@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import com.study.spring_study.dto.CreateListDTO;
 import com.study.spring_study.dto.ListDTO;
 import com.study.spring_study.dto.ProductDTO;
 import com.study.spring_study.dto.StoreLinkDTO;
@@ -30,6 +31,8 @@ public interface ModelMapper {
     @Mapping(source = "user.id", target = "userId")
     ListDTO listToDTO(ProductList list);
 
+    @Mapping(source = "name", target = "name")
+    CreateListDTO listDtoToCreateListDTO(ListDTO dto);
     
     
 }

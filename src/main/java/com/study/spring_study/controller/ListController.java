@@ -3,6 +3,7 @@ package com.study.spring_study.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class ListController {
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> createList(@RequestBody CreateListDTO dto, HttpServletRequest request) {
+    public ResponseEntity<EntityModel<ListDTO>> createList(@RequestBody CreateListDTO dto, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(listService.createList(dto, request));
     }
     @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -53,7 +54,7 @@ public class ListController {
         @ApiResponse(description= "Forbidden access", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> findList(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<EntityModel<ListDTO>> findById(@PathVariable Long id, HttpServletRequest request) {
         return ResponseEntity.ok(listService.findById(id, request));
     }
     @GetMapping("/user")
@@ -62,7 +63,7 @@ public class ListController {
         @ApiResponse(description= "Bad request", responseCode = "400", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<List<ListDTO>> getUserLists(HttpServletRequest request) {
+    public ResponseEntity<List<EntityModel<ListDTO>>> getUserLists(HttpServletRequest request) {
         return ResponseEntity.ok(listService.findListsByUserId(request));
     }
     @PutMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -72,7 +73,7 @@ public class ListController {
         @ApiResponse(description= "Forbidden access", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> updateList(@RequestBody CreateListDTO dto, Long id, HttpServletRequest request) {
+    public ResponseEntity<EntityModel<ListDTO>> updateList(@RequestBody CreateListDTO dto, Long id, HttpServletRequest request) {
         return ResponseEntity.ok(listService.updateList(dto, id, request));
     }
     @PatchMapping("/add/{productId}/{listId}")
@@ -82,7 +83,7 @@ public class ListController {
         @ApiResponse(description= "Forbidden access", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> addProductToList(@PathVariable Long productId, @PathVariable Long listId, HttpServletRequest request){
+    public ResponseEntity<EntityModel<ListDTO>> addProductToList(@PathVariable Long productId, @PathVariable Long listId, HttpServletRequest request){
         return ResponseEntity.ok(listService.addProductToList(productId, listId, request));
     }
     @PatchMapping("/remove/{productId}/{listId}")
@@ -92,7 +93,7 @@ public class ListController {
         @ApiResponse(description= "Forbidden access", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> removeProductFromList(@PathVariable Long productId, @PathVariable Long listId, HttpServletRequest request){
+    public ResponseEntity<EntityModel<ListDTO>> removeProductFromList(@PathVariable Long productId, @PathVariable Long listId, HttpServletRequest request){
         return ResponseEntity.ok(listService.removeProductFromList(productId, listId, request));
     }
     @DeleteMapping("/{id}")
@@ -102,8 +103,9 @@ public class ListController {
         @ApiResponse(description= "Forbidden access", responseCode = "403", content = @Content),
         @ApiResponse(description= "Internal server error", responseCode = "500", content = @Content)
     })
-    public ResponseEntity<ListDTO> findList(@RequestBody CreateListDTO dto, Long id, HttpServletRequest request) {
-        return ResponseEntity.ok(listService.updateList(dto, id, request));
+    public ResponseEntity<String> deleteList(Long id, HttpServletRequest request) {
+        listService.deleteById(id, request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     
 }

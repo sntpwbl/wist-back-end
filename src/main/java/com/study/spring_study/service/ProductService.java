@@ -35,6 +35,9 @@ public class ProductService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private Utils utils;
+
     public List<EntityModel<ProductDTO>> findAll() {
         
         List<EntityModel<ProductDTO>> products = productRepository.findAll().stream().map(product ->{
@@ -51,7 +54,7 @@ public class ProductService {
         Long userId = jwtUtil.getUserIdFromToken(request);
         List<EntityModel<ProductDTO>> products = productRepository.findByUserId(userId).stream().map(product ->{
             ProductDTO dto = mapper.productToDTO(product);
-            return Utils.createProductHateoasModel(dto, request);
+            return utils.createProductHateoasModel(dto, request);
         }
         ).collect(Collectors.toList());
 
@@ -63,7 +66,7 @@ public class ProductService {
             .map(p -> mapper.productToDTO(p))
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 
-            return Utils.createProductHateoasModel(dto, request);
+            return utils.createProductHateoasModel(dto, request);
     }
     
     public EntityModel<ProductDTO> createProduct(Product product, List<StoreLink> links, HttpServletRequest request) throws NullRequiredObjectException{
@@ -76,14 +79,14 @@ public class ProductService {
         product.setUser(creatorUser);
         ProductDTO dto = mapper.productToDTO(productRepository.save(product));
         
-        return Utils.createProductHateoasModel(dto, request);
+        return utils.createProductHateoasModel(dto, request);
     }
     
     public EntityModel<ProductDTO> updateProduct(ProductDTO productDTO, Long id, HttpServletRequest request) {
         if(productDTO == null) throw new NullRequiredObjectException();
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
-        Utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+            utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         product.setName(productDTO.name());
         product.setDescription(productDTO.description());
@@ -101,7 +104,7 @@ public class ProductService {
         product.getStoreLinks().addAll(updatedLinks);
         productRepository.save(product);
         ProductDTO dto = mapper.productToDTO(product);
-        return Utils.createProductHateoasModel(dto, request);
+        return utils.createProductHateoasModel(dto, request);
 
     }
 
@@ -109,13 +112,13 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
 
-        Utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+            utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         product.setBought(status);
         productRepository.saveAndFlush(product);
 
         ProductDTO dto = mapper.productToDTO(product);
-        return Utils.createProductHateoasModel(dto, request);
+        return utils.createProductHateoasModel(dto, request);
 
     }
     
@@ -123,7 +126,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("No product found for this ID."));
         
-        Utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+            utils.tokenUserIdEqualToReqUserIdVerification(product.getUser().getId(), jwtUtil.getUserIdFromToken(request));
         
         productRepository.deleteById(id);
     }

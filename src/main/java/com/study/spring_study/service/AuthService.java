@@ -43,16 +43,20 @@ public class AuthService {
 
     @Autowired
     private final PermissionRepository permissionRepository;
+
+    @Autowired
+    private final Utils utils;
     
 
     public AuthService(AuthenticationManager authManager, JwtTokenProvider tokenProvider, UserRepository userRepository,
-            BCryptPasswordEncoder passwordEncoder, ModelMapper mapper, PermissionRepository permissionRepository) {
+            BCryptPasswordEncoder passwordEncoder, ModelMapper mapper, PermissionRepository permissionRepository, Utils utils) {
         this.authManager = authManager;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mapper = mapper;
         this.permissionRepository = permissionRepository;
+        this.utils = utils;
     }
 
     public TokenDTO signIn(AccountCredentialsDTO credentialsDTO){
@@ -72,7 +76,7 @@ public class AuthService {
     }
 
     public UserDTO commonUserSignUp(CreateAccountDTO createDto){
-        if(Utils.areUserCredentialsInvalid(createDto)){
+        if(utils.areUserCredentialsInvalid(createDto)){
             throw new NullRequiredObjectException("Required field not sent.");
         } else if(!createDto.password().equals(createDto.repeatPassword()) ){
             throw new PasswordValidationException("Passwords do not match.");

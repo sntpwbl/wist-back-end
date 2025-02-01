@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import com.study.spring_study.dto.CreateListDTO;
@@ -38,13 +39,16 @@ public class ListService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    public ListDTO createList(CreateListDTO dto, HttpServletRequest request){
+    @Autowired
+    private Utils utils;
+
+    public EntityModel<ListDTO> createList(CreateListDTO dto, HttpServletRequest request){
         if(dto == null || dto.name() == null) throw new NullRequiredObjectException();
 
         Long userId = jwtUtil.getUserIdFromToken(request);
         ProductList newList = new ProductList(dto.name(), dto.description(), userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found.")));
 
-        return mapper.listToDTO(listRepository.save(newList));
+        return utils.createListHateoasModel(mapper.listToDTO(listRepository.save(newList)), request);
     }
 
     public List<ListDTO> findAll(){
@@ -53,55 +57,54 @@ public class ListService {
             }).collect(Collectors.toList());
     }
 
-    public ListDTO findById(Long id, HttpServletRequest request){
+    public EntityModel<ListDTO> findById(Long id, HttpServletRequest request){
         ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
-        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
-        return mapper.listToDTO(list);
+        return utils.createListHateoasModel(mapper.listToDTO(list), request);
     }
 
-    public List<ListDTO> findListsByUserId(HttpServletRequest request){
+    public List<EntityModel<ListDTO>> findListsByUserId(HttpServletRequest request){
         Long userId = jwtUtil.getUserIdFromToken(request);
-        List<ListDTO> list = listRepository.findByUserId(userId).stream().map(l -> {
-            return mapper.listToDTO(l);
+        return listRepository.findByUserId(userId).stream().map(l -> {
+            return utils.createListHateoasModel(mapper.listToDTO(l), request);
         }).collect(Collectors.toList());
 
-        return list;
     }
-    public ListDTO updateList(CreateListDTO dto, Long id, HttpServletRequest request){
+    public EntityModel<ListDTO> updateList(CreateListDTO dto, Long id, HttpServletRequest request){
         if(dto == null || dto.name() == null) throw new NullRequiredObjectException();
 
         ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
-        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
         
         list.setName(dto.name());
         list.setDescription(dto.description() != null ? dto.description() : list.getDescription());
 
-        return mapper.listToDTO(listRepository.save(list));
+        return utils.createListHateoasModel(mapper.listToDTO(listRepository.save(list)), request);
     }
-    public ListDTO addProductToList(Long productId, Long listId, HttpServletRequest request){
+    public EntityModel<ListDTO> addProductToList(Long productId, Long listId, HttpServletRequest request){
         Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundException("List not found."));
         ProductList list = listRepository.findById(listId).orElseThrow(() -> new NotFoundException("List not found."));
 
-        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
         list.addProduct(product);
 
-        return mapper.listToDTO(listRepository.save(list));
+        return utils.createListHateoasModel(mapper.listToDTO(listRepository.save(list)), request);
 
     }
-    public ListDTO removeProductFromList(Long productId, Long listId, HttpServletRequest request){
+    public EntityModel<ListDTO> removeProductFromList(Long productId, Long listId, HttpServletRequest request){
         Product product = productRepository.findById(productId).orElseThrow(() -> new NotFoundException("List not found."));
         ProductList list = listRepository.findById(listId).orElseThrow(() -> new NotFoundException("List not found."));
 
-        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
         list.removeProduct(product);
 
-        return mapper.listToDTO(listRepository.save(list));
+        return utils.createListHateoasModel(mapper.listToDTO(listRepository.save(list)), request);
 
     }
     public void deleteById(Long id, HttpServletRequest request){
         ProductList list = listRepository.findById(id).orElseThrow(() -> new NotFoundException("List not found."));
-        Utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
+        utils.tokenUserIdEqualToReqUserIdVerification(list.getUser().getId(), jwtUtil.getUserIdFromToken(request));
 
         listRepository.delete(list);
     }
